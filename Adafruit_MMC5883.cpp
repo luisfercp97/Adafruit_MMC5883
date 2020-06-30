@@ -46,9 +46,7 @@ static float _mmc5883_uT_LSB = 0.025; // scale factor for converting to uT
     @brief  Instantiates a new Adafruit_MMC5883 class
 */
 /**************************************************************************/
-Adafruit_MMC5883::Adafruit_MMC5883(int32_t sensorID) {
-  _sensorID = sensorID;
-}
+Adafruit_MMC5883::Adafruit_MMC5883(int32_t sensorID) { _sensorID = sensorID; }
 
 /***************************************************************************
  PUBLIC FUNCTIONS
@@ -75,14 +73,17 @@ bool Adafruit_MMC5883::begin(uint8_t i2c_addr, TwoWire *theWire) {
     return false;
   }
 
-  if (ctrl0_reg) delete ctrl0_reg;
-  if (ctrl1_reg) delete ctrl1_reg;
-  if (ctrl2_reg) delete ctrl2_reg;
+  if (ctrl0_reg)
+    delete ctrl0_reg;
+  if (ctrl1_reg)
+    delete ctrl1_reg;
+  if (ctrl2_reg)
+    delete ctrl2_reg;
 
   ctrl0_reg = new Adafruit_BusIO_Register(i2c_dev, MMC5883_REGISTER_INTCTRL0);
   ctrl1_reg = new Adafruit_BusIO_Register(i2c_dev, MMC5883_REGISTER_INTCTRL1);
   ctrl2_reg = new Adafruit_BusIO_Register(i2c_dev, MMC5883_REGISTER_INTCTRL2);
-  
+
   reset();
 
   // set for continuous reads
@@ -102,7 +103,7 @@ void Adafruit_MMC5883::reset(void) {
 }
 
 void Adafruit_MMC5883::setInterrupt(bool motion, bool meas) {
-  uint8_t c2 =  ctrl2_reg->readCached();
+  uint8_t c2 = ctrl2_reg->readCached();
   if (motion) {
     c2 |= 0x20;
   }
@@ -160,27 +161,25 @@ void Adafruit_MMC5883::getSensor(sensor_t *sensor) {
   sensor->sensor_id = _sensorID;
   sensor->type = SENSOR_TYPE_MAGNETIC_FIELD;
   sensor->min_delay = 0;
-  sensor->max_value = 800;  // 8 gauss == 800 microTesla
-  sensor->min_value = -800; // -8 gauss == -800 microTesla
+  sensor->max_value = 800;    // 8 gauss == 800 microTesla
+  sensor->min_value = -800;   // -8 gauss == -800 microTesla
   sensor->resolution = 0.025; // 0.25 milligauss == 0.025 microTesla
 }
-
-
-
 
 /**************************************************************************/
 /*!
     @brief  Reads the raw data from the sensor
 */
 /**************************************************************************/
-void Adafruit_MMC5883::read() {
+bool Adafruit_MMC5883::read() {
   uint8_t buffer[6];
 
   Adafruit_BusIO_Register status_reg =
       Adafruit_BusIO_Register(i2c_dev, MMC5883_REGISTER_STATUS);
-  Adafruit_BusIO_RegisterBits meas_m_done  = Adafruit_BusIO_RegisterBits(&status_reg, 1, 0);
+  Adafruit_BusIO_RegisterBits meas_m_done =
+      Adafruit_BusIO_RegisterBits(&status_reg, 1, 0);
 
-  while (! meas_m_done.read()) {
+  while (!meas_m_done.read()) {
     delay(1);
   }
 
@@ -197,4 +196,5 @@ void Adafruit_MMC5883::read() {
 
   // clear IRQ
   meas_m_done.write(true);
+  return true;
 }
