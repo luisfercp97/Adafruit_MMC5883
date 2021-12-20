@@ -138,9 +138,9 @@ bool Adafruit_MMC5883::getEvent(sensors_event_t *event) {
   event->sensor_id = _sensorID;
   event->type = SENSOR_TYPE_MAGNETIC_FIELD;
   event->timestamp = 0;
-  event->magnetic.x = (mag_x - 32768) * _mmc5883_uT_LSB;
-  event->magnetic.y = (mag_y - 32768) * _mmc5883_uT_LSB;
-  event->magnetic.z = (mag_z - 32768) * _mmc5883_uT_LSB;
+  event->magnetic.x = (mag_x - 32768);
+  event->magnetic.y = (mag_y - 32768);
+  event->magnetic.z = (mag_z - 32768);
 
   return true;
 }
